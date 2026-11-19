@@ -1,4 +1,4 @@
-import {taipeiDate} from './preferences.js?v=3.2-audio-simple';
+import {taipeiDate} from './preferences.js?v=3.3-library';
 export const TOPICS={A1:['跟家人的互動','日常作息','自我介紹','興趣與偏好'],A2:['拜訪親人','在商店買東西','談論天氣','問路']};
 export const THEMES=['family','routine','intro','hobby','visit','shop','weather','directions'];
 export const SCENE_LABELS=[['一起準備午餐','一起擺餐具','一起整理客廳'],['早晨梳洗','準備上學','睡前時光'],['教室裡的新朋友','公園裡認識彼此','校門口的招呼'],['公園裡的興趣','一起玩音樂','喜歡的點心'],['帶著禮物拜訪','在客廳聊聊天','庭院裡幫忙'],['市場買水果','麵包店買點心','文具店挑用品'],['晴天的公園','下雨的街道','起風的日子'],['公車站問路','尋找公園','看地圖找方向']];

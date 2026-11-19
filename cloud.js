@@ -1,6 +1,6 @@
-import {lessonTitle} from './model.js?v=3.2-audio-simple';
-import {mediaFiles,audioKey,imageSource} from './media.js?v=3.2-audio-simple';
-import {CONFIG} from './config.js?v=3.2-audio-simple';
+import {lessonTitle} from './model.js?v=3.3-library';
+import {mediaFiles,audioKey,imageSource} from './media.js?v=3.3-library';
+import {CONFIG} from './config.js?v=3.3-library';
 export const cloudReady=Boolean(CONFIG.SUPABASE_URL&&CONFIG.SUPABASE_ANON_KEY);
 let session;
 try{session=JSON.parse(sessionStorage.getItem('talking-session')||'null');}catch{session=null;}

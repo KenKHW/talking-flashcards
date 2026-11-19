@@ -1,0 +1,2 @@
+export function trashDraft(drafts,trash,id){const all={...drafts},removed={...trash};if(!Object.hasOwn(all,id))throw Error('找不到這份教材。');removed[id]=all[id];delete all[id];return {all,removed};}
+export function restoreDraft(drafts,trash,id){const all={...drafts},removed={...trash};if(!Object.hasOwn(removed,id))throw Error('找不到已刪除的教材。');if(Object.hasOwn(all,id))throw Error('同一份教材已存在，請重新開啟我的教材。');all[id]=removed[id];delete removed[id];return {all,removed};}

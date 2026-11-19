@@ -1,6 +1,6 @@
-import {normaliseAudioBlob,playbackErrorMessage} from './audio-format.js?v=3.2-audio-simple';
-import {synthesizeSpeech,stopSpeech} from './api.js?v=3.2-audio-simple';
-import {lessonTitle} from './model.js?v=3.2-audio-simple';
+import {normaliseAudioBlob,playbackErrorMessage} from './audio-format.js?v=3.3-library';
+import {synthesizeSpeech,stopSpeech} from './api.js?v=3.3-library';
+import {lessonTitle} from './model.js?v=3.3-library';
 const encoder=new TextEncoder();
 let database;
 function openDB(){return database??=new Promise((resolve,reject)=>{const req=indexedDB.open('talking-media-v2',1);req.onupgradeneeded=()=>req.result.createObjectStore('audio');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(Error('無法使用本機語音儲存空間。'));});}

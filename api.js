@@ -1,5 +1,5 @@
-import {normaliseAudioBlob,playbackErrorMessage} from './audio-format.js?v=3.2-audio-simple';
-import {CONFIG} from './config.js?v=3.2-audio-simple';
+import {normaliseAudioBlob,playbackErrorMessage} from './audio-format.js?v=3.3-library';
+import {CONFIG} from './config.js?v=3.3-library';
 
 const bases = {
   tts: CONFIG.API_PROXY_URL ? `${CONFIG.API_PROXY_URL.replace(/\/$/,'')}/tts/` : CONFIG.TTS_API_URL,
