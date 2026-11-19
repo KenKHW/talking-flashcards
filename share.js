@@ -1,4 +1,4 @@
-import {parseLesson} from './model.js?v=3.3-library';
+import {parseLesson} from './model.js?v=3.4-speech';
 export async function portableLink(lesson) {
   if(!globalThis.CompressionStream)throw Error('這個瀏覽器不支援分享連結，請改用新版 Chrome、Edge 或 Safari。');
   const stream=new Blob([JSON.stringify(lesson)]).stream().pipeThrough(new CompressionStream('gzip'));

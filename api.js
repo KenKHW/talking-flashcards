@@ -1,5 +1,5 @@
-import {normaliseAudioBlob,playbackErrorMessage} from './audio-format.js?v=3.3-library';
-import {CONFIG} from './config.js?v=3.3-library';
+import {normaliseAudioBlob,playbackErrorMessage} from './audio-format.js?v=3.4-speech';
+import {CONFIG} from './config.js?v=3.4-speech';
 
 const bases = {
   tts: CONFIG.API_PROXY_URL ? `${CONFIG.API_PROXY_URL.replace(/\/$/,'')}/tts/` : CONFIG.TTS_API_URL,
@@ -54,13 +54,14 @@ function serial(kind,work) {
   }); queues[kind]=run;return run;
 }
 
-const audioCache=new Map();
+const audioCache=new Map(),audioInFlight=new Map();
 export async function synthesizeSpeech({text,ethnicity,voice}) {
   if(!text.trim())throw Error('請先輸入族語文字。');
   if(text.length>300)throw Error('語音服務限制為 300 字元，請縮短句子。');
   const key=JSON.stringify([text,ethnicity,voice]);
   if(audioCache.has(key))return audioCache.get(key);
-  return serial('tts',async signal=>{
+  if(audioInFlight.has(key))return audioInFlight.get(key);
+  const pending=serial('tts',async signal=>{
     await gradioCall('tts','lambda',[ethnicity],signal);
     const [file]=await gradioCall('tts','default_speaker_tts',[voice,text],signal);
     const url=file?.url || (file?.path?`${CONFIG.TTS_API_URL}gradio_api/file=${file.path}`:'');
@@ -68,6 +69,7 @@ export async function synthesizeSpeech({text,ethnicity,voice}) {
     audioCache.set(key,url);if(audioCache.size>100)audioCache.delete(audioCache.keys().next().value);
     return url;
   });
+  audioInFlight.set(key,pending);try{return await pending;}finally{audioInFlight.delete(key);}
 }
 
 export async function translateText({text,ethnicity,language,direction}) {
@@ -89,7 +91,7 @@ export async function playSpeech(args,onStatus=()=>{}) {
   stopSpeech();const version=playbackVersion;onStatus('正在合成族語語音…');
   const url=await synthesizeSpeech(args);
   if(version!==playbackVersion)return;
-  const response=await fetch(url,{signal:AbortSignal.timeout(30000)});if(!response.ok)throw Error('無法下載語音，請稍後重試。');const blob=await normaliseAudioBlob(await response.blob());if(version!==playbackVersion)return;currentAudioURL=URL.createObjectURL(blob);currentAudio=document.getElementById('live-audio-player')||Object.assign(document.createElement('audio'),{id:'live-audio-player',hidden:true});if(!currentAudio.isConnected)document.body.append(currentAudio);currentAudio.src=currentAudioURL;currentAudio.load();onStatus('正在播放');
+  onStatus('正在下載合成音檔…');const response=await fetch(url,{signal:AbortSignal.timeout(30000)});if(!response.ok)throw Error('無法下載語音，請稍後重試。');const blob=await normaliseAudioBlob(await response.blob());if(version!==playbackVersion)return;currentAudioURL=URL.createObjectURL(blob);currentAudio=document.getElementById('live-audio-player')||Object.assign(document.createElement('audio'),{id:'live-audio-player',hidden:true});if(!currentAudio.isConnected)document.body.append(currentAudio);currentAudio.src=currentAudioURL;currentAudio.load();onStatus('正在播放');
   currentAudio.onended=()=>{if(version===playbackVersion)onStatus('播放完畢');};
   currentAudio.onerror=()=>{if(version===playbackVersion){audioCache.delete(JSON.stringify([args.text,args.ethnicity,args.voice]));onStatus('音檔無法載入，請再按一次播放。');}};
   try{await currentAudio.play();}catch(error){if(version===playbackVersion)throw Error(playbackErrorMessage(error));}
